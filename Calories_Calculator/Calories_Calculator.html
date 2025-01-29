@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calorie Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        .calculator {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .unit-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .unit-toggle button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #ddd;
+        }
+        .unit-toggle button.active {
+            background-color: #2353ac;
+            color: #fff;
+        }
+        button.calculate {
+            width: 100%;
+            padding: 10px;
+            background-color: #2353ac;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button.calculate:hover {
+            background-color: #2353ac;
+        }
+        .results {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .results h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .results p {
+            margin: 5px 0;
+        }
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>Calorie Calculator</h1>
+
+        <!-- Unit Toggle -->
+        <div class="unit-toggle">
+            <button id="metricBtn" onclick="setUnit('metric')" class="active">Metric (kg, cm)</button>
+            <button id="usBtn" onclick="setUnit('us')">US (lbs, feet/inches)</button>
+        </div>
+
+        <!-- Input Fields -->
+        <label for="age">Age:</label>
+        <input type="number" id="age" placeholder="Enter age" min="1" max="120">
+
+        <label for="gender">Gender:</label>
+        <select id="gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+
+        <div id="heightInput">
+            <label for="heightCm">Height (cm):</label>
+            <input type="number" id="heightCm" placeholder="Enter height in cm">
+        </div>
+
+        <div id="weightInput">
+            <label for="weightKg">Weight (kg):</label>
+            <input type="number" id="weightKg" placeholder="Enter weight in kg">
+        </div>
+
+        <label for="activity">Activity Level:</label>
+        <select id="activity">
+            <option value="1.2">Sedentary: little or no exercise</option>
+            <option value="1.375">Light: exercise 1-3 times/week</option>
+            <option value="1.55">Moderate: exercise 4-5 times/week</option>
+            <option value="1.725">Active: daily exercise or intense exercise 3-4 times/week</option>
+            <option value="1.9">Very Active: intense exercise 6-7 times/week</option>
+            <option value="2.1">Extra Active: very intense exercise daily, or physical job</option>
+        </select>
+
+    <pre>
+    Note:
+    - Exercise: 15-30 minutes of elevated heart rate activity.
+    - Intense Exercise: 45-120 minutes of elevated heart rate activity.
+    - Very Intense Exercise: 2+ hours of elevated heart rate activity.
+    </pre>
+
+        <button class="calculate" onclick="calculate()">Calculate</button>
+
+        <!-- Results -->
+        <div class="results" id="results">
+            <h2>Results:</h2>
+            <p>Maintain Weight: <span id="maintain"></span> calories/day</p>
+            <p>Mild Weight Loss (0.5 lb/week): <span id="mild"></span> calories/day</p>
+            <p>Weight Loss (1 lb/week): <span id="loss"></span> calories/day</p>
+            <p>Extreme Weight Loss (2 lb/week): <span id="extreme"></span> calories/day</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        Created by Jaylen Rush
+    </footer>
+
+    <script>
+        // Set default unit to Metric
+        let unit = "metric";
+
+        function setUnit(selectedUnit) {
+            unit = selectedUnit;
+            document.getElementById("metricBtn").classList.remove("active");
+            document.getElementById("usBtn").classList.remove("active");
+            document.getElementById(selectedUnit + "Btn").classList.add("active");
+
+            // Update input fields
+            if (unit === "metric") {
+                document.getElementById("heightInput").innerHTML = `
+                    <label for="heightCm">Height (cm):</label>
+                    <input type="number" id="heightCm" placeholder="Enter height in cm">
+                `;
+                document.getElementById("weightInput").innerHTML = `
+                    <label for="weightKg">Weight (kg):</label>
+                    <input type="number" id="weightKg" placeholder="Enter weight in kg">
+                `;
+            } else {
+                document.getElementById("heightInput").innerHTML = `
+                    <label for="heightFeet">Height (feet):</label>
+                    <input type="number" id="heightFeet" placeholder="Feet">
+                    <label for="heightInches">Height (inches):</label>
+                    <input type="number" id="heightInches" placeholder="Inches">
+                `;
+                document.getElementById("weightInput").innerHTML = `
+                    <label for="weightLbs">Weight (lbs):</label>
+                    <input type="number" id="weightLbs" placeholder="Enter weight in lbs">
+                `;
+            }
+        }
+
+        function calculate() {
+            // Get inputs
+            const age = parseInt(document.getElementById("age").value);
+            const gender = document.getElementById("gender").value;
+            const activity = parseFloat(document.getElementById("activity").value);
+
+            let heightCm, weightKg;
+
+            if (unit === "metric") {
+                heightCm = parseFloat(document.getElementById("heightCm").value);
+                weightKg = parseFloat(document.getElementById("weightKg").value);
+            } else {
+                const heightFeet = parseFloat(document.getElementById("heightFeet").value);
+                const heightInches = parseFloat(document.getElementById("heightInches").value);
+                heightCm = (heightFeet * 12 + heightInches) * 2.54; // Convert feet/inches to cm
+                weightKg = parseFloat(document.getElementById("weightLbs").value) * 0.453592; // Convert lbs to kg
+            }
+
+            // Calculate BMR
+            let bmr;
+            if (gender === "male") {
+                bmr = 10 * weightKg + 6.25 * heightCm - 5 * age + 5;
+            } else {
+                bmr = 10 * weightKg + 6.25 * heightCm - 5 * age - 161;
+            }
+
+            // Calculate TDEE
+            const tdee = bmr * activity;
+
+            // Display results
+            document.getElementById("maintain").textContent = Math.round(tdee);
+            document.getElementById("mild").textContent = Math.round(tdee - 500);
+            document.getElementById("loss").textContent = Math.round(tdee - 1000);
+            document.getElementById("extreme").textContent = Math.round(tdee - 1500);
+        }
+    </script>
+</body>
+</html>
